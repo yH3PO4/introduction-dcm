@@ -1,0 +1,62 @@
+\chapter{効用関数}\label{ch:utility}
+
+\ref{ch:model}章では、各選択肢の効用の確定項 $V$ が分かれば、各選択肢の選択確率が計算できることを示しました。この章では、多項ロジットモデルにおいて効用の確定項 $V$ をどのように求めるかを示します。
+
+\section{効用の立式}\label{sec:utility}
+
+まず、\textbf{効用は連続変数であり、いくつかの説明変数の線形和であることを仮定}します。
+
+\textbf{説明変数}とは、各選択肢の定量可能な変数のことを指します。\ref{sec:utility_maxim}節で、効用の値はその選択肢の性質や選択行動をする個人の属性によって変わると書きました。例えば手段選択モデルの場合、下記のようなものが説明変数になりえます。
+
+\begin{itemize}
+    \item 所要時間
+    \item 運賃
+    \item 乗り換え回数
+    \item 年齢
+    \item 免許を持っているかどうか（持っていれば $1$, 持っていなければ $0$）
+    \item ある交通手段の定期券を持っているかどうか
+\end{itemize}
+
+説明変数は大きく分けて、それぞれの交通手段に固有の特性と、選択をする個人の属性の２種類あるといえます。
+
+これらの説明変数は、もちろん単位もバラバラですし、何よりどの指標がどれだけ効用に強く影響するかは分かりません。そこで、これらの説明変数をただ足し上げるのではなく、各説明変数に「\textbf{重み}」を掛けてから足し上げる必要があります。
+
+例えば、東京から大阪へ行く選択肢が「新幹線」「夜行バス」「飛行機」の三択で、各選択肢の効用が「所要時間」「運賃」「年齢」で決まるとします。このときの新幹線の効用は、$x_{S,time}, x_{S,cost}, x_{age}$\footnote{個人の属性は選択肢によって変わることはないので、$x_{S,age}$ ではなく $x_{age}$ です。} がそれぞれ新幹線の所要時間・新幹線の運賃・個人の年齢であるとすると、以下の式(\ref{eq:utility_sample_train})のようにおくことができます。
+
+\begin{equation}
+    \label{eq:utility_sample_train}
+    V_S=\beta_{time}x_{S,time}+\beta_{cost} x_{S,cost}+\beta_{S,age}x_{age}
+\end{equation}
+
+式(\ref{eq:utility_sample_train})の $\beta$ が「重み」に相当する値で、未知のパラメータです。
+
+同様に、夜行バスと飛行機の効用も式にしてみます。
+
+\begin{align}
+    V_B & =\beta_{time}x_{B,time}+\beta_{cost} x_{B,cost}+\beta_{B,age}x_{age} \label{eq:utility_sample_bus}      \\
+    V_P & =\beta_{time}x_{P,time}+\beta_{cost} x_{P,cost}+\beta_{P,age}x_{age} \label{eq:utility_sample_airplane}
+\end{align}
+
+所要時間のパラメータ $\beta_{time}$ と運賃のパラメータ $\beta_{cost}$ は3つの式(\ref{eq:utility_sample_train})(\ref{eq:utility_sample_bus})(\ref{eq:utility_sample_airplane})で共通なのに対し、年齢のパラメータは選択肢ごとに $\beta_{S,age}, \beta_{B,age}, \beta_{P,age}$ と別の変数になっている点に注目してください。
+
+所要時間や運賃など交通手段に固有の特性に掛ける重みは、すべての選択肢で同じにすることで、その特性がどう選択に影響するかを表すことができます。例えば、$\beta_{time}$ が負の値であれば、時間がかかるほど（$x_{S,time}, x_{B,time}, x_{P,time}$ が大きくなるほど）効用が小さくなるということを意味します。
+
+一方、個人の属性に掛ける重みは、選択肢ごとに分けることで、その属性の持ち主が相対的にどの選択肢を選びやすくなるかを表すことができます。例えば、$\beta_{B,age}<\beta_{P,age}$ ならば、年齢が高いほど（$x_{age}$ が大きくなるほど）相対的に飛行機の方が効用が大きくなるということを意味します。
+
+また、これらの説明変数では説明できない、各選択肢に固有の好まれ具合を表現するために、最後に説明変数を掛けないパラメータを付けます。なおこのとき、\textbf{「説明変数を掛けないパラメータ」を全ての選択肢につけてはいけません。}理由はこの後の\ref{ssec:est_unique}項で説明します。
+
+\begin{align}
+    V_S & =\beta_{time}x_{S,time}+\beta_{cost} x_{S,cost}+\beta_{S,age}x_{age}         \\
+    V_B & =\beta_{time}x_{B,time}+\beta_{cost} x_{B,cost}+\beta_{B,age}x_{age}+\beta_B \\
+    V_P & =\beta_{time}x_{P,time}+\beta_{cost} x_{P,cost}+\beta_{P,age}x_{age}+\beta_P
+\end{align}
+
+\subsection{より複雑な立式}
+
+\begin{itemize}
+    \item 「免許を持っていない人は絶対に車で移動しない」といったことを表現するには、$V_{car}=-\infty$ とすればよいです。こうすることで選択確率 $\frac{\exp(V_{car})}{\sum \exp V}$ の分子が強制的に $0$ になり、選択確率が $0$ すなわち絶対に選択されない状態になります。
+
+    \item 説明変数の $\log$ などをとってから重みを掛けるという方法もあり得ます。「所要時間が20分から15分になった」場合と「所要時間が120分から115分になった」場合で、どちらも同じだけ効用が増加したと考えるよりは、20分→15分の方が効用の増加幅が大きいとする方が自然でしょう。$\log$ を取るなどすることでこのような非線形な効用の増減も表現できます。
+
+          ただし、このような調整を恣意的に行うことは Data dredging や p-hacking 等と呼ばれ、研究不正にあたります。\textbf{行動メカニズムとして説明できないような効用式を立ててはいけません}。
+\end{itemize}

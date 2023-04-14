@@ -1,0 +1,88 @@
+\documentclass[a4paper,11pt,oneside,uplatex]{jsbook}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{color}
+\usepackage{ascmac}  % itembox環境
+\usepackage{makeidx}
+\usepackage{slant}
+\usepackage{booktabs}
+\usepackage[square,numbers]{natbib}
+\usepackage{listings} % コードブロック
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}
+\newtheorem{definition}[theorem]{定義}
+\renewcommand{\proofname}{\textbf{証明}}
+
+
+% https://ja.overleaf.com/learn/latex/Code_listing
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{40\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.55in}
+%%
+\title{{\huge 離散選択モデル入門}\\{\large Introduction to Discrete Choice Models} \\ 
+$\,$\\$\,$\\$\,$\\$\,$\\$\,$\\$\,$\\$\,$\\}
+\author{林~由翔\\Yuito Hayashi}
+\date{2022年2月 作成 \\ 2023年4月 最終更新}
+\begin{document}
+
+\maketitle
+\frontmatter
+\chapter{はじめに}
+この文書は、人間の選択行動を推定するときに用いられる「離散選択モデル」と、離散選択モデルの
+中で代表的なモデルである「多項ロジットモデル」(Multinomial Logit Model, MNL)について、理
+論および実装方法をまとめたものです。
+実装パートでは多項ロジットモデル(以下MNLと書きます)を用いて交通手段選択モデルを実装しま
+す。このため理論パートも交通分野での利用を前提とした説明となっています。
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+\mainmatter
+
+\input{1_model}
+\input{2_utility}
+\input{3_parameter_est}
+\input{4_testing}
+\input{5_code}
+
+\backmatter
+\bibliographystyle{plainnat}
+\addcontentsline{toc}{chapter}{参考文献}
+\begin{thebibliography}{99}
+    \bibitem{binn} BinN studies シリーズ
+    ネットワーク行動学 -都市と移動-．最終更新日 2014年9月26日． http://bin.t.u-tokyo.ac.jp/kaken/
+\end{thebibliography}
+\end{document}
