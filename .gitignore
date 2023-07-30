@@ -2,7 +2,7 @@
 !*/
 !.gitignore
 !*.tex
-!*.pdf
 !latexmkrc
 !slant.sty
 !figure/*
+!*.md
