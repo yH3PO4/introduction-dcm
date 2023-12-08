@@ -149,7 +149,7 @@ print(res)
 
     \lstinline{minimize} 関数は最小化したい関数、初期値、使うアルゴリズムを引数にとるのですが、ここで渡す関数が先ほど実装した \lstinline{fr} ではなく \lstinline{mf} であることに注意してください。やりたいのは \lstinline{fr} つまり対数尤度 $LL$ の最大化ですが、Rと違ってPythonのscipy.optimizeには関数最大化のライブラリがないので、\lstinline{fr(x)} の符号を逆にしたもの すなわち $-LL$ を返すような関数 \lstinline{mf} を新たに定義し、これを最小化するというアプローチをとります。
 
-    なお、\lstinline{scipy.optimize.minimize}で指定するmethodはここではNelder-Meadを用いていますが、他のmethodを指定してもよいです。\lstinline{method=’SLSQP’} が高速かつより発展的なモデルのための制約もつけやすく、良いようです。scipy.optimize.minimize の公式マニュアルを見ると、使用できるmethodの一覧があります。
+    なお、\lstinline{scipy.optimize.minimize}で指定するmethodはここではNelder-Meadを用いていますが、他のmethodを指定してもよいです。\lstinline{method="SLSQP"} が高速かつより発展的なモデルのための制約もつけやすく、良いようです。scipy.optimize.minimize の公式マニュアルを見ると、使用できるmethodの一覧があります。
 
     ここまでのコードを実行するとこんな感じの結果が返ってきます。
 
