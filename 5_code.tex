@@ -57,7 +57,7 @@ $\beta_{d1}$ が所要時間に関するパラメータ、$\beta_{f1}$ が運賃
 
 このコードでは \lstinline{train} \lstinline{bus} などの変数に、効用の確定項そのものではなくその $\exp$ をとったものを代入しています。
 
-$\exp$ をとったあとに \lstinline{df["代替手段生成可否train"]} などを掛けていますが、この列は「その選択肢が選択可能かどうか」を表しています（選択可能なら $1$, 不可なら $0$）。**[3章 効用の立式]** の最後で少し触れていますが、選択確率を $0$ にしたいという場合には $V=-\infty$ とすればよく、このコードではその代わりに $\exp(V)=0$ としています。
+$\exp$ をとったあとに \lstinline{df["代替手段生成可否train"]} などを掛けていますが、この列は「その選択肢が選択可能かどうか」を表しています（選択可能なら $1$, 不可なら $0$）。\ref{ch:utility}章の最後で少し触れていますが、選択確率を $0$ にしたいという場合には $V=-\infty$ とすればよく、このコードではその代わりに $\exp(V)=0$ としています。
 
 なお、これらの変数は \lstinline{pd.Series} という型になっています。これらはそれぞれ人数分の長さを持つ一次元配列のようなものだと考えてください。
 
@@ -147,9 +147,9 @@ print(res)
 
     \lstinline{minimize} が関数最小化のライブラリです。
 
-    \lstinline{minimize} 関数は最小化したい関数、初期値、使うアルゴリズムを引数にとるのですが、ここで渡す関数が先ほど実装した \lstinline{fr} ではなく \lstinline{mf} であることに注意してください。やりたいのは \lstinline{fr} つまり対数尤度 $LL$ の**最大化**ですが、Rと違ってPythonのscipy.optimizeには関数最大化のライブラリがないので、\lstinline{fr(x)} の符号を逆にしたもの すなわち $-LL$ を返すような関数 \lstinline{mf} を新たに定義し、これを**最小化**するというアプローチをとります。
+    \lstinline{minimize} 関数は最小化したい関数、初期値、使うアルゴリズムを引数にとるのですが、ここで渡す関数が先ほど実装した \lstinline{fr} ではなく \lstinline{mf} であることに注意してください。やりたいのは \lstinline{fr} つまり対数尤度 $LL$ の最大化ですが、Rと違ってPythonのscipy.optimizeには関数最大化のライブラリがないので、\lstinline{fr(x)} の符号を逆にしたもの すなわち $-LL$ を返すような関数 \lstinline{mf} を新たに定義し、これを最小化するというアプローチをとります。
 
-    なお、\lstinline{scipy.optimize.minimize}で指定するmethodはここではNelder-Meadを用いていますが、他のmethodを指定してもよいです。\lstinline{method=’SLSQP’} が高速かつより発展的なモデルのための制約もつけやすく、良いようです。scipy.optimize.minimize の公式マニュアルを見ると、使用できるmethodの一覧があります。
+    なお、\lstinline{scipy.optimize.minimize}で指定するmethodはここではNelder-Meadを用いていますが、他のmethodを指定してもよいです。\lstinline{method="SLSQP"} が高速かつより発展的なモデルのための制約もつけやすく、良いようです。scipy.optimize.minimize の公式マニュアルを見ると、使用できるmethodの一覧があります。
 
     ここまでのコードを実行するとこんな感じの結果が返ってきます。
 
@@ -179,9 +179,9 @@ x: array([ 1.72219562,  1.12706031,  0.59742075, -0.12335375, -2.35299203,
 -0.14858004])
 \end{lstlisting}
 
-    見るべきは \lstinline{fun} と \lstinline{x} です。\lstinline{fun} は \lstinline{mf} のとりうる最小値、\lstinline{x} はそのときのパラメータです。つまり \lstinline{-fun} が $LL$ の最大値となります。これを使えば\ref{sec:likelihood_ratio}節の尤度比検定**をすることができます。
+    見るべきは \lstinline{fun} と \lstinline{x} です。\lstinline{fun} は \lstinline{mf} のとりうる最小値、\lstinline{x} はそのときのパラメータです。つまり \lstinline{-fun} が $LL$ の最大値となります。これを使えば\ref{sec:likelihood_ratio}節の尤度比検定をすることができます。
 
-    最後にt値を求めてみます。Rであればヘッセ行列を求める関数がデフォルトで使えるのですが、Pythonには調べた限りなかったので、自分で数値微分を実装してヘッセ行列を求める必要があります。
+    最後にt値を求めてみます。Rであればヘッセ行列を求める関数がデフォルトで使えるのですが、Pythonにはおそらくないようなので、自分で数値微分を実装してヘッセ行列を求める必要があります。
 
     コードを示すと次のようにできます。
 
@@ -209,7 +209,7 @@ def tval(x: np.array) -> np.array:
 print(f"tval: {tval(res.x)}")
 \end{lstlisting}
 
-    まず1階微分の**中心差分近似**を考えると、微小な値 $h$ を用いて、
+    まず1階微分の\textbf{中心差分近似}を考えると、微小な値 $h$ を用いて、
 
     \begin{equation}
         \frac{\partial f(\boldsymbol x)}{\partial x_i} = \frac{f(x_1, x_2,\ldots, x_i+h, \ldots, x_n) - f(x_1, x_2,\ldots, x_i-h, \ldots, x_n)}{2h}
