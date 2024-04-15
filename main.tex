@@ -6,7 +6,6 @@
 \usepackage[dvipdfmx]{color}
 \usepackage{ascmac}  % itembox環境
 \usepackage{makeidx}
-\usepackage{slant}
 \usepackage{booktabs}
 \usepackage[square,numbers]{natbib}
 \usepackage{listings} % コードブロック
@@ -81,8 +80,5 @@ $\,$\\$\,$\\$\,$\\$\,$\\$\,$\\$\,$\\$\,$\\}
 \backmatter
 \bibliographystyle{plainnat}
 \addcontentsline{toc}{chapter}{参考文献}
-\begin{thebibliography}{99}
-    \bibitem{binn} BinN studies シリーズ
-    ネットワーク行動学 -都市と移動-．最終更新日 2014年9月26日． http://bin.t.u-tokyo.ac.jp/kaken/
-\end{thebibliography}
+\bibliography{export}
 \end{document}

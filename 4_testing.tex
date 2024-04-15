@@ -36,28 +36,29 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
     \item[漸近有効性] 標本が多くなると、最尤推定量の分散は\textbf{クラメール・ラオの不等式}の下限に近付く。
 \end{description}
 
-\subsubsection{推定量の有効性}
+\subsection{最尤推定量の分散}\label{ssec:variance_estimator}
 
 推定量の期待値がパラメータの真値に一致するとき、その推定量は\textbf{不偏推定量}であるといいます（一致性とは異なる概念です）。さらに、その不偏推定量が他のどの不偏推定量よりも分散が大きくないとき、その推定量は\textbf{有効推定量}であるといいます。最尤推定量は不偏推定量ではないので、当然有効推定量でもありませんが、標本が多くなると漸近的に有効推定量のようなふるまいを見せる、というのが漸近有効性です。
 
 有効推定量が定義可能であることからも分かるように、不偏推定量の分散には下限が存在します。この不偏推定量の分散の下限を示すのがクラメール・ラオの不等式です。
 
 \begin{theorem}[クラメール・ラオの不等式]
-    \begin{equation}
-        cov(\bm{\hat\beta}) \ge -E\left[\nabla\nabla^\top LL(\bm{\hat\beta})\right]^{-1}
-    \end{equation}
+    \begin{align}
+        I(\bm\beta) \coloneqq -E\left[\nabla\nabla^\top LL(\bm\beta)\right] \\
+        cov(\bm{\hat\beta}) \ge I(\bm\beta)^{-1}
+    \end{align}
 \end{theorem}
 
-ただし $\bm{\hat\beta}$ は不偏推定量とし、$cov(\bm{\hat\beta})$ は $\bm{\hat\beta}$ の分散共分散行列、$LL$ は対数尤度関数です。また、$\nabla\nabla^\top LL(\bm{\hat\beta})$ は書き出すと下の式(\ref{eq:hessian_matrix})のようになり、特に行列部分には\textbf{ヘッセ行列}という名前がつけられています。
+ただし $\bm{\hat\beta}$ は不偏推定量とし、$cov(\bm{\hat\beta})$ は $\bm{\hat\beta}$ の分散共分散行列、$LL$ は対数尤度関数です。また、$I(\bm\beta)$は\textbf{フィッシャー情報量}と呼ばれます。なお、$\nabla\nabla^\top LL(\bm\beta)$ は書き出すと下の式(\ref{eq:hessian_matrix})のようになり、特に行列部分には\textbf{ヘッセ行列}という名前がつけられています。
 
 \begin{equation}
     \label{eq:hessian_matrix}
-    \nabla\nabla^\top LL(\bm{\hat\beta}) = \begin{bmatrix}
+    \nabla\nabla^\top LL(\bm\beta) = \begin{bmatrix}
         \frac{\partial^2 LL}{\partial {\beta_1}^2}              & \frac{\partial^2 LL}{\partial \beta_1 \partial \beta_2} & \cdots & \frac{\partial^2 LL}{\partial \beta_1 \partial \beta_n}  \\
         \frac{\partial^2 LL}{\partial \beta_2 \partial \beta_1} & \frac{\partial^2 LL}{\partial {\beta_2}^2}              & \cdots & \frac{\partial^2 LL}{\partial \beta_2 \partial \beta_n } \\
         \vdots                                                  & \vdots                                                  & \ddots & \vdots                                                   \\
         \frac{\partial^2 LL}{\partial \beta_n \beta_1}          & \frac{\partial^2 LL}{\partial \beta_n \partial \beta_2} & \cdots & \frac{\partial^2 LL}{\partial {\beta_n}^2}
-    \end{bmatrix} \bm{\hat\beta}
+    \end{bmatrix} \bm\beta
 \end{equation}
 
 等号が成立する時、$\bm{\hat\beta}$ は分散の下限を達成しているので、$\bm{\hat\beta}$ は有効推定量となります。
@@ -65,10 +66,25 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
 最尤推定量の場合は、漸近有効性により、標本が十分多ければ等号成立、すなわち
 
 \begin{equation}
-    cov(\bm{\hat\beta}) = -E\left[\nabla\nabla^\top LL(\bm{\hat\beta})\right]^{-1}
+    \label{eq:fisher_information_inv}
+    cov(\bm{\hat\beta}) \simeq I(\bm\beta)^{-1}
 \end{equation}
 
-としてよいです。
+としてよいです。このように、フィッシャー情報量を求めることで、最尤推定量の分散を求めることができます。
+
+フィッシャー情報量を確率変数である$\bm\beta$の分布から直接計算することもできますが、フィッシャー情報量に代えて\textbf{観測された情報量}を用いる方が計算が簡単かつ有用です\cite{Efron1978}。観測された情報量$J(\bm{\hat\beta})$は次のように定義されます。
+
+\begin{equation}
+    \label{eq:observed_information}
+    J(\bm{\hat\beta}) \coloneqq -\nabla\nabla^\top LL(\bm{\hat\beta})
+\end{equation}
+
+式(\ref{eq:observed_information})を用いると、式(\ref{eq:fisher_information_inv})の代わりに次の式が得られます。
+
+\begin{equation}
+    \label{eq:observed_information_inv}
+    cov(\bm{\hat\beta}) \simeq J(\bm{\hat\beta})^{-1}
+\end{equation}
 
 \subsection{区間推定}\label{ssec:interval_est}
 
@@ -96,7 +112,7 @@ t検定では、各パラメータについて、次のような\textbf{帰無�
 
 いっぽう右の図では、$95\%$ 信頼区間内に $0$ が含まれているので、帰無仮説は棄却されません。すると、そのパラメータに対応する説明変数が選択行動を説明しているかどうかは分かりません（\textbf{説明変数が「効かない」ことを意味しているわけではなく、「効くとは言い切れない」ということを意味します}）。
 
-ここで、信頼区間の幅を求めるには、最尤推定量の分散が必要になります。そこで、先ほどの $cov(\bm{\hat\beta}) = -E\left[\nabla\nabla^\top LL(\bm{\hat\beta})\right]^{-1}$ を用いると、各パラメータの分散を得ることができます。とくに今回は推定値が一つしかないので、その推定値（ここでは $\bm\beta^*$ とおきます）をそのまま代入して $cov(\bm{\hat\beta}) = -\left(\nabla\nabla^\top LL(\bm\beta^*)\right)^{-1}$ としてよいです。 $L$ のヘッセ行列は数値微分によって得ることができます。
+ここで、信頼区間の幅を求めるには、最尤推定量の分散が必要になります。最尤推定量の分散を求めるために式(\ref{eq:observed_information_inv})を用います。なお$L$ のヘッセ行列は数値微分によって計算できます。
 
 各パラメータの最尤推定量の分散 $\bm s^2$ が分かれば、最尤推定量の漸近正規性により、正規分布の場合と同様に信頼区間を求めることができます。
 
