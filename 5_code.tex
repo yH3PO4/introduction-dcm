@@ -4,7 +4,7 @@
 
 \section{ファイルの読み込み等}
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[caption=ファイル読み込み,language=Python]
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
@@ -15,7 +15,7 @@ df = pd.read_csv('ensyu.csv', encoding='shift-jis')
 
 \section{効用の計算}
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[caption=効用関数の設定,language=Python]
 def fr(x: np.array) -> float:
     b1, b2, b3, b4, d1, f1 = x  # b1~b4: 定数項, d1: 所要時間, f1: 運賃
     
@@ -51,8 +51,6 @@ def fr(x: np.array) -> float:
     \end{aligned}
 \end{equation}
 
-
-
 $\beta_{d1}$ が所要時間に関するパラメータ、$\beta_{f1}$ が運賃に関するパラメータ、それ以外の４つが定数項（説明変数に掛けないパラメータ）です。\ref{ssec:est_unique}項で見た通り、説明変数に掛けないパラメータの数は、選択肢の数より１少なくしないといけません。
 
 このコードでは \lstinline{train} \lstinline{bus} などの変数に、効用の確定項そのものではなくその $\exp$ をとったものを代入しています。
@@ -63,7 +61,7 @@ $\exp$ をとったあとに \lstinline{df["代替手段生成可否train"]} な
 
 \section{選択確率の計算}
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[caption=選択確率,language=Python]
 def fr(x: np.array) -> float:
     # (前略)
     # 続き
@@ -80,10 +78,10 @@ def fr(x: np.array) -> float:
 \end{lstlisting}
 
 \lstinline{deno} には選択確率の分母となる $\sum_{i=1}^N \exp(V_i)$ の値を代入し、それを使って各選択肢の選択確率 $P_j=\frac{\exp(V_j)}{\sum_{i=1}^N \exp(V_i)}$ を計算しています。これで、各参加者がそれぞれどれだけの選択確率で選択肢を選ぶかが分かります。
-
+    
     \section{対数尤度の計算}
-
-    \begin{lstlisting}[language=Python]
+    
+    \begin{lstlisting}[caption=対数尤度,language=Python]
 def fr(x: np.array) -> float:
     # (前略)
     # 続き
@@ -109,34 +107,34 @@ def fr(x: np.array) -> float:
     )
     return LL
 \end{lstlisting}
-
-
+    
+    
     選択肢を計算した後に、\lstinline{Ptrain = Ptrain.where(Ptrain != 0, 1)} のような処理が入っています。これは「選択確率が$0$ のときに $1$ に直す」という処理で、単に選択確率を出すだけならいらない（というよりやってはいけない）処理です。しかし、最後に対数尤度を計算する際に選択確率の $\log$ を取る必要があるため、選択確率に $0$ が含まれていると困ります。そこで $P=1$ にすることで、 $\log(1)=0$ を利用して $LL$ の値に影響を与えないようにすることができます。
-
+    
     その次の \lstinline{Ctrain} などの変数には、「選択されたのが鉄道なら $1$ 、そうでないなら $0$」のような値が入ります。もちろんこれらも人によって選択結果が違うので、人数分の長さの配列になっています。
-
+    
     最後の \lstinline{LL} の式が対数尤度を求める式ですが、\ref{ssec:log_likelihood}項で出た式とは少し違う形になっています。\ref{ssec:log_likelihood}項の式は、$i$ 番目の人が選択した選択肢が $y_i$ とすると、
-
+    
     \begin{equation}
         LL(\boldsymbol\beta) = \sum_{i=1}^M \log P(y_i;\boldsymbol{x_i})
     \end{equation}
-
+    
     という式でした。しかしここで実装しているのは、あえて数式にするならば、
-
+    
     \begin{equation}
         LL(\boldsymbol\beta) = \sum_{i=1}^M \sum_{j=1}^N C_{i,j}\log P(j, \boldsymbol{x_i}
         )
     \end{equation}
-
+    
     （ただし $C_{i,j}$ は$i$ 番目の人が $j$ 番目の選択肢を選択したなら $1$ 、そうでないなら $0$）
-
+    
     のような式です。しかしよく見ると、両者は同値であることが分かります。
-
+    
     \section{最尤推定とその評価}
-
+    
     ここから先のコードはPythonならではの問題があり、Rと同じように簡潔に書くことができないため、Rによる実装は無視して書いています。
-
-    \begin{lstlisting}[language=Python]
+    
+    \begin{lstlisting}[caption=scipy.optimize.minimizeによる最尤推定,language=Python]
 def mf(x: np.array) -> float:
     return -fr(x)
     
@@ -144,15 +142,15 @@ x0 = np.zeros(6)
 res = minimize(mf, x0, method="Nelder-Mead")
 print(res)
 \end{lstlisting}
-
+    
     \lstinline{minimize} が関数最小化のライブラリです。
-
+    
     \lstinline{minimize} 関数は最小化したい関数、初期値、使うアルゴリズムを引数にとるのですが、ここで渡す関数が先ほど実装した \lstinline{fr} ではなく \lstinline{mf} であることに注意してください。やりたいのは \lstinline{fr} つまり対数尤度 $LL$ の最大化ですが、Rと違ってPythonのscipy.optimizeには関数最大化のライブラリがないので、\lstinline{fr(x)} の符号を逆にしたもの すなわち $-LL$ を返すような関数 \lstinline{mf} を新たに定義し、これを最小化するというアプローチをとります。
-
+    
     なお、\lstinline{scipy.optimize.minimize}で指定するmethodはここではNelder-Meadを用いていますが、他のmethodを指定してもよいです。\lstinline{method="SLSQP"} が高速かつより発展的なモデルのための制約もつけやすく、良いようです。scipy.optimize.minimize の公式マニュアルを見ると、使用できるmethodの一覧があります。
-
+    
     ここまでのコードを実行するとこんな感じの結果が返ってきます。
-
+    
     \begin{lstlisting}
     final_simplex: (array([[ 1.72219562,  1.12706031,  0.59742075, -0.12335375, -2.35299203,
     -0.14858004],
@@ -178,14 +176,14 @@ success: True
 x: array([ 1.72219562,  1.12706031,  0.59742075, -0.12335375, -2.35299203,
 -0.14858004])
 \end{lstlisting}
-
+    
     見るべきは \lstinline{fun} と \lstinline{x} です。\lstinline{fun} は \lstinline{mf} のとりうる最小値、\lstinline{x} はそのときのパラメータです。つまり \lstinline{-fun} が $LL$ の最大値となります。これを使えば\ref{sec:likelihood_ratio}節の尤度比検定をすることができます。
-
+    
     最後にt値を求めてみます。Rであればヘッセ行列を求める関数がデフォルトで使えるのですが、Pythonにはおそらくないようなので、自分で数値微分を実装してヘッセ行列を求める必要があります。
-
+    
     コードを示すと次のようにできます。
-
-    \begin{lstlisting}[language=Python]
+    
+    \begin{lstlisting}[caption=t値計算,language=Python]
 def hessian(x: np.array) -> np.array:
     h = 10 ** -4  # 数値微分用の微小量
     n = len(x)
@@ -208,23 +206,23 @@ def tval(x: np.array) -> np.array:
     
 print(f"tval: {tval(res.x)}")
 \end{lstlisting}
-
+    
     まず1階微分の\textbf{中心差分近似}を考えると、微小な値 $h$ を用いて、
-
+    
     \begin{equation}
         \frac{\partial f(\boldsymbol x)}{\partial x_i} = \frac{f(x_1, x_2,\ldots, x_i+h, \ldots, x_n) - f(x_1, x_2,\ldots, x_i-h, \ldots, x_n)}{2h}
     \end{equation}
-
+    
     です。$i$ 番目の要素だけが $1$ でそれ以外が $0$ の単位ベクトル $\boldsymbol e_i = [0,0,\ldots,0,1,0,\ldots,0]$ を用いると、
-
+    
     \begin{equation}
         \frac{\partial f(\boldsymbol x)}{\partial x_i} = \frac{f(\boldsymbol x + h\boldsymbol e_i) - f(\boldsymbol x - h\boldsymbol e_i)}{2h}
     \end{equation}
-
+    
     と書けます。
-
+    
     ヘッセ行列の各要素はこれをもう一度微分すると得られます。
-
+    
     \begin{equation}
         \begin{aligned}
             \frac{\partial^2 f(\boldsymbol x)}{\partial x_i \partial x_j}
@@ -233,23 +231,23 @@ print(f"tval: {tval(res.x)}")
              & = \frac{f(\boldsymbol x + h\boldsymbol e_i + h\boldsymbol e_j) - f(\boldsymbol x - h\boldsymbol e_i + h\boldsymbol e_j) -f(\boldsymbol x + h\boldsymbol e_i - h\boldsymbol e_j) + f(\boldsymbol x - h\boldsymbol e_i - h\boldsymbol e_j)}{4h^2}
         \end{aligned}
     \end{equation}
-
+    
     ヘッセ行列が求まれば、あとは\ref{sec:t_test}節で見た通りに実装できます。
-
+    
     最尤推定値にヘッセ行列をかけて、逆行列をとって $-1$ 倍すれば、最尤推定量の分散共分散行列が得られます。\lstinline{np.diag} で行列の対角成分（つまり $n$ 個のパラメータの分散）が得られるので、それのルートを取った値は各パラメータの最尤推定量の標準偏差となり、最尤推定値を標準誤差で割ればt値が得られます。
-
+    
     実行してみるとt値は下のようになります。
-
+    
     \begin{lstlisting}
 [ 6.31137194  3.71837913  2.59395594 -0.5058321  -6.08917584 -3.02836851]
 \end{lstlisting}
-
+    
     これで、4番目のパラメータ以外は $1\%$ 有意であることがわかりました。
-
+    
     たとえば、5番目のパラメータは \lstinline{d1} すなわち所要時間のパラメータだったので、このモデルにおいて所要時間は効用に $1\%$ 有意で影響しているといえます。また、そのパラメータの最尤推定値は $-2.35299203$ で負の値なので、時間がかかるほど効用が負になるということを意味しています。これがもし正の値だったら何かがおかしいと考えた方が良いでしょう。
-
+    
     初期尤度 $LL(\bm 0)$、最終尤度 $LL(\bm{\hat\beta})$、決定係数（McFaddenの擬似決定係数）、修正済み決定係数（自由度調整済み決定係数）は次のように得られます。
-
+    
     \begin{lstlisting}[language=Python]
 L0 = fr(x0)
 print(f"L0: {L0:.4f}")  # 初期尤度
@@ -260,12 +258,12 @@ print(f"R: {R:.4f}")  # 決定係数
 R_adj = 1 - (LL - len(x0)) / L0
 print(f"R_adj: {R2:.4f}")  # 修正済み決定係数
 \end{lstlisting}
-
+    
     \section{推定結果の表記}
     \label{sec:est_result}
-
+    
     論文などに掲載する際に、推定結果を表にまとめる必要があります。特に交通分野では推定結果を示すときの慣例がありますので、ここで触れておきます。なお、論文によってはこの慣例に従わない場合もあります。
-
+    
     推定結果は表\ref{tab:est_result}のように示します。パラメータごとに名称、推定値、t値を示します。t値の絶対値が1.96以上となる場合は $5\%$ 有意であることを示す記号 * を、2.59以上となる場合は $1\%$ 有意であることを示す記号 ** を付けます。またモデル全体を表す指標として、サンプル数、初期尤度 $LL(\bm 0)$、最終尤度 $LL(\bm{\hat\beta})$ 、決定係数、修正済み決定係数を示すのが一般的です。近年の論文ではAICやBICといった統計量を記載することも増えています。値は小数点以下2桁までを記載します。
 
 \begin{table}
@@ -294,99 +292,4 @@ print(f"R_adj: {R2:.4f}")  # 修正済み決定係数
 
 \section{コード全体}
 
-\begin{lstlisting}[language=Python]
-import numpy as np
-import pandas as pd
-from scipy.optimize import minimize
-
-df = pd.read_csv(r'..\ensyu_mnl\ensyu.csv', encoding='shift-jis')
-
-
-def fr(x: np.array) -> float:
-    b1, b2, b3, b4, d1, f1 = x  # b1~b4: 定数項, d1: 所要時間, f1: 運賃
-    
-    train: pd.Series = df["代替手段生成可否train"] * np.exp(
-    d1 * df["総所要時間train"] / 100 + f1 * df["費用train"] / 100 + b1
-    )
-    bus: pd.Series = df["代替手段生成可否bus"] * np.exp(
-    d1 * df["総所要時間bus"] / 100 + f1 * df["費用bus"] / 100 + b2
-    )
-    car: pd.Series = df["代替手段生成可否car"] * np.exp(
-    d1 * df["所要時間car"] / 100 + b3
-    )
-    bike: pd.Series = df["代替手段生成可否bike"] * np.exp(
-    d1 * df["所要時間bike"] / 100 + b4
-    )
-    walk: pd.Series = df["代替手段生成可否walk"] * np.exp(
-    d1 * df["所要時間walk"] / 100
-    )
-    
-    deno: pd.Series = car + train + bus + bike + walk
-    
-    Ptrain: pd.Series = df["代替手段生成可否train"] * (train / deno)
-    Pbus: pd.Series = df["代替手段生成可否bus"] * (bus / deno)
-    Pcar: pd.Series = df["代替手段生成可否car"] * (car / deno)
-    Pbike: pd.Series = df["代替手段生成可否bike"] * (bike / deno)
-    Pwalk: pd.Series = df["代替手段生成可否walk"] * (walk / deno)
-    
-    Ptrain = Ptrain.where(Ptrain != 0, 1)
-    Pbus = Pbus.where(Pbus != 0, 1)
-    Pcar = Pcar.where(Pcar != 0, 1)
-    Pbike = Pbike.where(Pbike != 0, 1)
-    Pwalk = Pwalk.where(Pwalk != 0, 1)
-    
-    Ctrain: pd.Series = df["代表交通手段"] == "鉄道"
-    Cbus: pd.Series = df["代表交通手段"] == "バス"
-    Ccar: pd.Series = df["代表交通手段"] == "自動車"
-    Cbike: pd.Series = df["代表交通手段"] == "自転車"
-    Cwalk: pd.Series = df["代表交通手段"] == "徒歩"
-    
-    LL: float = np.sum(
-    Ctrain * np.log(Ptrain)
-    + Cbus * np.log(Pbus)
-    + Ccar * np.log(Pcar)
-    + Cbike * np.log(Pbike)
-    + Cwalk * np.log(Pwalk)
-    )
-    return LL
-    
-    
-def mf(x: np.array) -> float:
-    return -fr(x)
-    
-    
-def hessian(x: np.array) -> np.array:
-    h = 10 ** -4  # 数値微分用の微小量
-    n = len(x)
-    res = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            e_i, e_j = np.zeros(n), np.zeros(n)
-            e_i[i] = 1
-            e_j[j] = 1
-            
-            res[i][j] = (fr(x + h * e_i + h * e_j)
-            - fr(x + h * e_i - h * e_j)
-            - fr(x - h * e_i + h * e_j)
-            + fr(x - h * e_i - h * e_j)) / (4 * h * h)
-    return res
-    
-    
-def tval(x: np.array) -> np.array:
-    return x / np.sqrt(-np.diag(np.linalg.inv(hessian(x))))
-    
-    
-x0 = np.zeros(6)
-res = minimize(mf, x0, method="Nelder-Mead")
-print(res)
-
-print(f"tval: {tval(res.x)}")
-L0 = fr(x0)
-print(f"L0: {L0:.4f}")  # 初期尤度
-LL = -res.fun
-print(f"LL: {LL:.4f}")  # 最終尤度
-R = 1 - LL / L0
-print(f"R: {R:.4f}")  # 決定係数
-R_adj = 1 - (LL - len(x0)) / L0
-print(f"R_adj: {R2:.4f}")  # 修正済み決定係数
-\end{lstlisting}
+\lstinputlisting[caption=コード全体,label=src:main,language=Python]{code/main.py}
