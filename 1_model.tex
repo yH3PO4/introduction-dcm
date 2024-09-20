@@ -68,11 +68,18 @@ $U_S,U_B,U_P$ が正規分布に従う場合、この確率を計算するのは
 
 正規分布に形状が似ていて、離散選択モデルの計算上都合がいい性質を持っている分布として、\textbf{ガンベル分布}が用いられます。効用がガンベル分布に従うと仮定したモデルのことを\textbf{ロジットモデル}と呼びます。
 
-ガンベル分布の確率密度関数は式(\ref{eq:gumbel_pdf})の通りです。
+ガンベル分布の確率密度関数 $f(x)$ は式(\ref{eq:gumbel_pdf})の通りです。
 
 \begin{equation}
     \label{eq:gumbel_pdf}
     f(x) = \mu \exp(-\mu (x-\eta)) \exp(-\exp(-\mu (x-\eta)))
+\end{equation}
+
+また、累積密度関数は式(\ref{eq:gumbel_cdf})の通りです。
+
+\begin{equation}
+    \label{eq:gumbel_cdf}
+    F(x) = \exp(-\exp(-\mu (x-\eta)))
 \end{equation}
 
 ここで、$\mu$ はガンベル分布の\textbf{スケールパラメータ}、$\eta$ は\textbf{ロケーションパラメータ}と呼ばれます。正規分布において平均値 $\mu$ と分散 $\sigma^2$ が与えられれば分布の形状が分かるのと同様に、ガンベル分布においてスケールパラメータとロケーションパラメータが分かれば分布の形状が分かります。
@@ -90,19 +97,24 @@ $U_S,U_B,U_P$ が正規分布に従う場合、この確率を計算するのは
         \label{eq:gumbel_max}
         \left(\frac{1}{\mu} \ln\sum_{i=1}^N \exp(\mu\eta_i), \mu\right)
     \end{equation}
+
+    ※ロケーションパラメータは変数ごとに異なっていてもよいですが、\textbf{スケールパラメータは同じ}である必要があります。
 \end{theorem}
+\begin{proof}
+    \ref{prf:gumbel_max}を参照。
+\end{proof}
 
 \begin{theorem}
-
     \label{it:logistic}
     独立な二つの確率変数 $X_1,X_2$ がそれぞれガンベル分布 $Gb(\eta_1, \mu), Gb(\eta_2, \mu)$ に従うとき、その差 $X_1-X_2$ は、式(\ref{eq:logistic})に示す累積分布関数を持つ\textbf{ロジスティック分布}に従う。
     \begin{equation}
         \label{eq:logistic}
-        F(x)=\frac{1}{1+\exp(\mu(\eta_2-\eta_1-x))}
+        F(x)=\frac{1}{1+\exp(\mu(\eta_1-\eta_2-x))}
     \end{equation}
-
-    ※ロケーションパラメータは変数ごとに異なっていてもよいですが、\textbf{スケールパラメータは同じ}である必要があります。
 \end{theorem}
+\begin{proof}
+    \ref{prf:logistic}を参照。
+\end{proof}
 
 この二つの性質を用いることで、積分計算なしに選択確率を計算することができます。
 
