@@ -4,5 +4,6 @@
 !*.tex
 !*.bib
 !latexmkrc
+!code/*
 !figure/*
 !*.md

@@ -8,42 +8,30 @@
 \usepackage{makeidx}
 \usepackage{booktabs}
 \usepackage[square,numbers]{natbib}
-\usepackage{listings} % コードブロック
+\usepackage{listings,jvlisting} % コードブロック
 
 \theoremstyle{definition}
 \newtheorem{theorem}{定理}
 \newtheorem{definition}[theorem]{定義}
 \renewcommand{\proofname}{\textbf{証明}}
 
-
-% https://ja.overleaf.com/learn/latex/Code_listing
-
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
+\renewcommand{\lstlistingname}{ソースコード}
+\lstset{ 
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    % commentstyle={\smallitshape},
+    % keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
 }
-
-\lstset{style=mystyle}
-
 \setlength{\textwidth}{\fullwidth}
 \setlength{\textheight}{40\baselineskip}
 \addtolength{\textheight}{\topskip}
