@@ -1,0 +1,56 @@
+\chapter{Appendix}
+\section{定理 \ref{it:gumbel_max} の証明}
+
+\begin{proof}
+    \label{prf:gumbel_max}
+    \begin{equation}
+        \begin{aligned}
+              & P(\max(X_1,X_2, \ldots X_i, \ldots, X_N) \le x)                                                                                              \\
+            = & \prod_{i=1}^N P(X_i \le x)                                                                                                                   \\
+            = & \prod_{i=1}^N \left(\exp(-\exp(-\mu(x-\eta_i)))\right)                                            & (\because 累積密度関数(式 \ref{eq:gumbel_cdf})) \\
+            = & \exp\left(-\sum_{i=1}^N\exp(-\mu(x-\eta_i))\right)                                                                                           \\
+            = & \exp\left(-\exp\left(-\mu\left(x-\frac{1}{\mu}\ln\sum_{i=1}^N\exp(\mu\eta_i)\right)\right)\right)
+        \end{aligned}
+    \end{equation}
+    これは $Gb\left(\frac{1}{\mu} \ln\sum_{i=1}^N \exp(\mu\eta_i), \mu\right)$ の累積密度関数である。
+\end{proof}
+
+\section{定理 \ref{it:logistic} の証明}
+\begin{proof}
+    \label{prf:logistic}
+    \begin{equation}
+        \begin{aligned}
+              & P(X_1-X_2 \le x)                                                                                              \\
+            = & P(X_1 \le x+X_2)                                                                                              \\
+            = & \int_{-\infty}^{\infty} P(X_1 \le x+X_2|X_2=y)f_{X_2}(y)dy                                                    \\
+            = & \int_{-\infty}^{\infty} P(X_1 \le x+y)f_{X_2}(y)dy                                                            \\
+            = & \int_{-\infty}^{\infty} \exp(-\exp(-\mu(x+y-\eta_1)))f_{X_2}(y)dy                                             \\
+            = & \int_{-\infty}^{\infty} \exp(-\exp(-\mu(x+y-\eta_1)))\mu \exp(-\mu (y-\eta_2)) \exp(-\exp(-\mu (y-\eta_2)))dy \\
+        \end{aligned}
+    \end{equation}
+    ここで、変数変換 $z = \exp(-\mu (y-\eta_2))$ を行うと、$dz = -\mu\exp(-\mu (y-\eta_2))dy$。また積分区間は下表\ref{tbl:int_interval}のとおり。
+
+    \begin{table}[ht]
+        \caption{$x \to z$ の積分区間}
+        \centering
+        \label{tbl:int_interval}
+        \begin{tabular}{ccc}
+            \hline
+            $y$ & $-\infty$ & $\infty$ \\
+            \hline
+            $z$ & $\infty$  & 0        \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \begin{equation}
+        \begin{aligned}
+              & \int_{-\infty}^{\infty} \exp(-\exp(-\mu(x+y-\eta_1)))\mu \exp(-\mu (y-\eta_2)) \exp(-\exp(-\mu (y-\eta_2)))dy               \\
+            = & \int_{-\infty}^{\infty} \exp(-\exp(-\mu(y-\eta_2+x-\eta_1+\eta_2)))\mu \exp(-\mu (y-\eta_2)) \exp(-\exp(-\mu (y-\eta_2)))dy \\
+            = & \int_{0}^{\infty} \exp(-z\exp(\mu(\eta_1-\eta_2-x))) \exp(-z)dz                                                             \\
+            = & \int_{0}^{\infty} \exp(-z(1+\exp(\mu(\eta_1-\eta_2-x))))dz                                                                  \\
+            = & \left[-\frac{1}{1+\exp(\mu(\eta_1-\eta_2-x))} \exp(-z(1+\exp(\mu(\eta_1-\eta_2-x))))\right]_{z=0}^{z \to\infty}             \\
+            = & \frac{1}{1+\exp(\mu(\eta_1-\eta_2-x))}
+        \end{aligned}
+    \end{equation}
+\end{proof}
