@@ -48,7 +48,7 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
     
     \begin{align}
         \label{eq:fisher_information}
-        I(\bm\beta) \coloneqq -E\left[\nabla\nabla^\top LL(\bm\beta)\right] \\  
+        I(\bm\beta) \coloneqq -\mathbb{E}\left[\nabla\nabla^\top LL(\bm\beta)\right] \\  
         \label{eq:cramer_rao}
         \cov(\bm{\hat\beta}) \ge I(\bm\beta)^{-1}
     \end{align}
