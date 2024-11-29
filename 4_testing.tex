@@ -43,13 +43,22 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
 有効推定量が定義可能であることからも分かるように、不偏推定量の分散には下限が存在します。この不偏推定量の分散の下限を示すのがクラメール・ラオの不等式です。
 
 \begin{theorem}[クラメール・ラオの不等式]
+    \label{it:cramer_rao}
+    $\bm{\hat\beta}$ をパラメータ $\bm\beta$ の不偏推定量とし、$\cov(\bm{\hat\beta})$ は $\bm{\hat\beta}$ の分散共分散行列、$LL$ は対数尤度関数とする。このとき以下の行列に対する不等式が成り立つ。
+    
     \begin{align}
-        I(\bm\beta) \coloneqq -E\left[\nabla\nabla^\top LL(\bm\beta)\right] \\
-        cov(\bm{\hat\beta}) \ge I(\bm\beta)^{-1}
+        \label{eq:fisher_information}
+        I(\bm\beta) \coloneqq -\mathbb{E}\left[\nabla\nabla^\top LL(\bm\beta)\right] \\  
+        \label{eq:cramer_rao}
+        \cov(\bm{\hat\beta}) \ge I(\bm\beta)^{-1}
     \end{align}
+    ただし、式(\ref{eq:cramer_rao})の不等号は、左辺から右辺を引いた行列 $\cov(\bm{\hat\beta})-I(\bm\beta)^{-1}$ が半正定値行列であることを意味する\footnote{もし $\bm\beta$ が1変数のパラメータであれば、この不等号は単に実数の不等号と同じ意味になります。}。
 \end{theorem}
+\begin{proof}
+    \ref{prf:cramer_rao}を参照。
+\end{proof}
 
-ただし $\bm{\hat\beta}$ は不偏推定量とし、$cov(\bm{\hat\beta})$ は $\bm{\hat\beta}$ の分散共分散行列、$LL$ は対数尤度関数です。また、$I(\bm\beta)$は\textbf{フィッシャー情報量}と呼ばれます。なお、$\nabla\nabla^\top LL(\bm\beta)$ は書き出すと下の式(\ref{eq:hessian_matrix})のようになり、特に行列部分には\textbf{ヘッセ行列}という名前がつけられています。
+$I(\bm\beta)$は\textbf{フィッシャー情報行列}と呼ばれます。なお、$\nabla\nabla^\top LL(\bm\beta)$ は書き出すと下の式(\ref{eq:hessian_matrix})のようになり、特に行列部分には\textbf{ヘッセ行列}という名前がつけられています。
 
 \begin{equation}
     \label{eq:hessian_matrix}
@@ -61,18 +70,16 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
     \end{bmatrix} \bm\beta
 \end{equation}
 
-等号が成立する時、$\bm{\hat\beta}$ は分散の下限を達成しているので、$\bm{\hat\beta}$ は有効推定量となります。
-
-最尤推定量の場合は、漸近有効性により、標本が十分多ければ等号成立、すなわち
+等号が成立する時、$\bm{\hat\beta}$ は分散の下限を達成しているので、$\bm{\hat\beta}$ は有効推定量となります。最尤推定量の場合は、漸近有効性により、標本が十分多ければ等号成立、すなわち
 
 \begin{equation}
     \label{eq:fisher_information_inv}
-    cov(\bm{\hat\beta}) \simeq I(\bm\beta)^{-1}
+    \cov(\bm{\hat\beta}) \simeq I(\bm\beta)^{-1}
 \end{equation}
 
-としてよいです。このように、フィッシャー情報量を求めることで、最尤推定量の分散を求めることができます。
+としてよいです。このように、フィッシャー情報行列を求めることで、最尤推定量の分散を求めることができます。
 
-フィッシャー情報量を確率変数である$\bm\beta$の分布から直接計算することもできますが、フィッシャー情報量に代えて\textbf{観測された情報量}を用いる方が計算が簡単かつ有用です\cite{Efron1978}。観測された情報量$J(\bm{\hat\beta})$は次のように定義されます。
+フィッシャー情報行列を確率変数である$\bm\beta$の分布から直接計算することもできますが、フィッシャー情報行列に代えて\textbf{観測された情報行列}を用いる方が計算が簡単かつ有用です\cite{Efron1978}。観測された情報行列$J(\bm{\hat\beta})$は次のように定義されます。
 
 \begin{equation}
     \label{eq:observed_information}
@@ -83,7 +90,7 @@ t検定では、「各パラメータの最尤推定量がとる値が $0$ に�
 
 \begin{equation}
     \label{eq:observed_information_inv}
-    cov(\bm{\hat\beta}) \simeq J(\bm{\hat\beta})^{-1}
+    \cov(\bm{\hat\beta}) \simeq J(\bm{\hat\beta})^{-1}
 \end{equation}
 
 \subsection{区間推定}\label{ssec:interval_est}

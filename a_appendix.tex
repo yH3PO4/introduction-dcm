@@ -29,7 +29,7 @@
         \end{aligned}
     \end{equation}
     ここで、変数変換 $z = \exp(-\mu (y-\eta_2))$ を行うと、$dz = -\mu\exp(-\mu (y-\eta_2))dy$。また積分区間は下表\ref{tbl:int_interval}のとおり。
-
+    
     \begin{table}[ht]
         \caption{$x \to z$ の積分区間}
         \centering
@@ -42,7 +42,7 @@
             \hline
         \end{tabular}
     \end{table}
-
+    
     \begin{equation}
         \begin{aligned}
               & \int_{-\infty}^{\infty} \exp(-\exp(-\mu(x+y-\eta_1)))\mu \exp(-\mu (y-\eta_2)) \exp(-\exp(-\mu (y-\eta_2)))dy               \\
@@ -53,4 +53,133 @@
             = & \frac{1}{1+\exp(\mu(\eta_1-\eta_2-x))}
         \end{aligned}
     \end{equation}
+\end{proof}
+
+\section{定理 \ref{it:cramer_rao} の証明}
+
+まず、式\ref{eq:cramer_rao}で定義したフィッシャー情報行列のもう一つの表現を導く。
+
+\begin{lemma}
+    \label{lm:fisher_prod}
+    \begin{equation}
+        I(\bm\beta) \coloneqq -\mathbb{E}\left[\nabla\nabla^\top LL(\bm\beta)\right] = \mathbb{E}[\nabla LL(\bm{\beta})\nabla LL(\bm{\beta})^T]
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    全ての$i,j$に対して、$\mathbb{E}\left[\partial_{\beta_i}\partial_{\beta_j} LL(\bm{\beta})\right] = -\mathbb{E}\left[\partial_{\beta_i}LL(\bm{\beta}) \partial_{\beta_j} LL(\bm{\beta})\right]$が成り立つことを示せばよい。
+    
+    \begin{equation}
+        \begin{aligned}
+              & \mathbb{E}\left[\partial_{\beta_i}\partial_{\beta_j} LL(\bm{\beta})\right]                                                                                                                                                                                   \\
+            = & \mathbb{E}\left[\partial_{\beta_i}\left(\frac{1}{L(\bm{\beta})}\cdot \partial_{\beta_j} L(\bm{\beta})\right)\right]                                                                                                                                          \\
+            = & \mathbb{E}\left[-\frac{1}{L(\bm{\beta})^2}\partial_{\beta_i} L(\bm{\beta})\partial_{\beta_j} L(\bm{\beta}) + \frac{1}{L(\bm{\beta})}\partial_{\beta_i}\partial_{\beta_j} L(\bm{\beta})\right]                                              & (\because 積の微分) \\
+            = & -\mathbb{E}\left[\frac{1}{L(\bm{\beta})}\partial_{\beta_i} L(\bm{\beta}) \frac{1}{L(\bm{\beta})}\partial_{\beta_j} L(\bm{\beta})\right] + \mathbb{E}\left[\frac{1}{L(\bm{\beta})}\partial_{\beta_i}\partial_{\beta_j} L(\bm{\beta})\right]                   \\
+            = & -\mathbb{E}\left[\partial_{\beta_i} LL(\bm{\beta}) \partial_{\beta_j} LL(\bm{\beta})\right] + \mathbb{E}\left[\frac{1}{L(\bm{\beta})}\partial_{\beta_i}\partial_{\beta_j} f(y;\bm{\beta})\right]
+        \end{aligned}
+    \end{equation}
+    
+    ここで、尤度$L(\bm{\beta};y)$はパラメータ$\bm\beta$の下で事象$y$が発生する確率密度$f(y;\bm{\beta})$に等しいことに注意すると、第二項は以下のようにして消去することが出来る\footnote{式中で微分積分交換を行っているが、これを行うには厳密には色々と数学的条件がある。}。
+    
+    \begin{equation}
+        \begin{aligned}
+              & \mathbb{E}\left[\frac{1}{L(\bm{\beta})}\partial_{\beta_i}\partial_{\beta_j} L(\bm{\beta})\right]                                              \\
+            = & \int f(y;\bm{\beta})\frac{1}{L(\bm{\beta})}\partial_{\beta_i}\partial_{\beta_j} L(\bm{\beta})dy  & (\because 期待値の定義)                          \\
+            = & \int \partial_{\beta_i}\partial_{\beta_j} f(y;\bm{\beta})dy                                      & (\because f(y;\bm{\beta})=L(\bm{\beta};y)) \\
+            = & \partial_{\beta_i}\partial_{\beta_j} \int f(y;\bm{\beta})dy                                      & (微分積分交換を行っている)                             \\
+            = & \partial_{\beta_i}\partial_{\beta_j} 1 = 0
+        \end{aligned}
+    \end{equation}
+    
+    よって、
+    
+    \begin{equation}
+        \mathbb{E}\left[\partial_{\beta_i}\partial_{\beta_j} LL(\bm{\beta})\right] = -\mathbb{E}\left[\partial_{\beta_i}LL(\bm{\beta}) \partial_{\beta_j} LL(\bm{\beta})\right]
+    \end{equation}
+\end{proof}
+
+次に、分散共分散行列の性質をもとに、確率ベクトル版 Cauchy-Schwarz の不等式を示す。
+
+\begin{definition}
+    \label{def:positive_definite}
+    $n$次実対称行列 $A\in\mathbb{R}^{n \times n}$ が正定値行列であるとは、任意のベクトル $x\in\mathbb{R}^n$ に対して、$x^TAx > 0$ が成り立つことをいう。また、n次実対称行列 $A\in\mathbb{R}^{n \times n}$ が半正定値行列であるとは、任意のベクトル $x\in\mathbb{R}^n$ に対して、$x^TAx \ge 0$ が成り立つことをいう。
+\end{definition}
+
+行列$A$が正定値行列であることを、$A>0$ と書く。また、行列$A$が半正定値行列であることを、$A\ge 0$ と書く。
+
+\begin{lemma}
+    \label{lm:cov_semi_definite}
+    分散共分散行列は半正定値行列である。
+\end{lemma}
+\begin{proof}
+    確率変数 $x\in\mathbb{R}^n$ の分散共分散行列を $\Sigma$ とする。任意の(確率変数でない)ベクトル $v\in\mathbb{R}^n$ に対して、$v^T\Sigma v \ge 0$ が成り立つことを示す。
+    
+    \begin{equation}
+        \begin{aligned}
+            v^T\Sigma v & = v^T \mathbb{E}[(x - \mathbb{E}[x])(x - \mathbb{E}[x])^T] v   & (\because 分散共分散行列の定義)   \\
+                        & = \mathbb{E}[v^T(x - \mathbb{E}[x])(x - \mathbb{E}[x])^T v]    & (\because 期待値の線形性)      \\
+                        & = \mathbb{E}[(v^T(x - \mathbb{E}[x]))(v^T(x - \mathbb{E}[x]))] & (\because ベクトルの内積の順序交換) \\
+                        & = \mathbb{E}[(v^T(x - \mathbb{E}[x]))^2]                                                 \\
+                        & \ge 0
+        \end{aligned}
+    \end{equation}
+\end{proof}
+
+\begin{lemma}[確率ベクトル版 Cauchy-Schwarz の不等式]
+    \label{lm:cauchy_schwarz}
+    確率変数 $x,y\in\mathbb{R}^n$に対して、次の不等式が成り立つ。
+    \begin{equation}
+        0 \le \mathbb{E}[xx^T] - \mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}\mathbb{E}[yx^T]
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    \label{prf:cauchy_schwarz}
+    行列 $A \coloneq -\mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}$ と定める。このとき、  
+    確率変数 $x + Ay$ の分散共分散行列は $\mathbb{E}[(x + Ay)(x + Ay)^T]$ である。したがって、
+    \begin{equation}
+        \begin{aligned}
+            0 & \le \mathbb{E}[(x + Ay)(x + Ay)^T]                                                                                                                           & (\because 補題\ref{lm:cov_semi_definite}) \\              
+              & = \mathbb{E}[xx^T] + \mathbb{E}[Ayy^TA^T] + \mathbb{E}[Ayx^T] + \mathbb{E}[x y^TA^T]                                                                                                                   \\
+              & = \mathbb{E}[xx^T] + A\mathbb{E}[yy^T]A^T + A\mathbb{E}[yx^T] + \mathbb{E}[x y^T]A^T                                                                                                                   \\
+              & = \mathbb{E}[xx^T] - \mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}\mathbb{E}[yy^T]A^T - \mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}\mathbb{E}[yx^T] + \mathbb{E}[x y^T]A^T                                           \\
+              & = \mathbb{E}[xx^T] - \mathbb{E}[xy^T]A^T - \mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}\mathbb{E}[yx^T] + \mathbb{E}[x y^T]A^T                                                                                \\
+              & = \mathbb{E}[xx^T] - \mathbb{E}[xy^T]\mathbb{E}[yy^T]^{-1}\mathbb{E}[yx^T]                                                                                                                             \\
+        \end{aligned}
+    \end{equation}
+\end{proof}
+
+補題\ref{lm:cauchy_schwarz}を用いて、定理\ref{it:cramer_rao}の証明を行う。
+
+\begin{proof}
+    \label{prf:cramer_rao}
+    $x=\bm{\hat\beta}, y=\nabla LL(\bm{\beta})$を補題\ref{lm:cauchy_schwarz}の式に代入する。
+    
+    \begin{equation}
+        \label{eq:cov_ll}
+        \begin{aligned}
+            0 & \le \mathbb{E}[\bm{\hat\beta}\bm{\hat\beta}^T] - \mathbb{E}[\bm{\hat\beta}\nabla LL(\bm{\beta})^T]\mathbb{E}[\nabla LL(\bm{\beta})\nabla LL(\bm{\beta})^T]^{-1}\mathbb{E}[\nabla LL(\bm{\beta})\bm{\hat\beta}^T]                                     \\
+              & = \cov(\bm{\hat\beta}) - \mathbb{E}[\bm{\hat\beta}\nabla LL(\bm{\beta})^T]I(\bm{\beta})^{-1}\mathbb{E}[\nabla LL(\bm{\beta})\bm{\hat\beta}^T]                                                                    & (\because 補題\ref{lm:fisher_prod}) \\
+        \end{aligned}
+    \end{equation}
+    
+    ここで、
+    
+    \begin{equation}
+        \begin{aligned}
+              & \mathbb{E}[\bm{\hat\beta}\nabla LL(\bm{\beta};y)^T]                                                                                           \\
+            = & \int \bm{\hat\beta}\nabla LL(\bm{\beta};y)^T f(y;\bm{\beta})dy                        & (\because 期待値の定義)                                     \\
+            = & \int \bm{\hat\beta}\frac{\nabla L(\bm{\beta};y)^T}{L(\bm{\beta};y)} f(y;\bm{\beta})dy & \left(\because (\log f(x))'=\frac{f'(x)}{f(x)}\right) \\
+            = & \int \bm{\hat\beta}\nabla L(\bm{\beta};y)^T dy                                        & (\because f(y;\bm{\beta})=L(\bm{\beta};y))            \\
+            = & \nabla \int \bm{\hat\beta} L(\bm{\beta};y)^T dy                                                                                               \\
+            = & \nabla \mathbb{E}[\bm{\hat\beta}]^T                                                                                                           \\
+            = & \nabla \bm{\beta}^T                                                                   & (\because 不偏推定量の定義)                                   \\
+            = & E                                                                                     & (単位行列)
+        \end{aligned}
+    \end{equation}
+    
+    同様に $\mathbb{E}[\nabla LL(\bm{\beta})\bm{\hat\beta}^T] = E$ となることが示せる。したがって式\ref{eq:cov_ll}は次のように変形できる。
+    
+    \begin{align}
+        0 \le \cov(\bm{\hat\beta}) - I(\bm{\beta})^{-1} \\
+        \cov(\bm{\hat\beta}) \ge I(\bm{\beta})^{-1}
+    \end{align}
 \end{proof}
